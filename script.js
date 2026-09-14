@@ -6,6 +6,11 @@ let gameRunning = false;
 let playerScore = 0;
 let computerScore = 0;
 
+// Touch tracking
+let touchStartY = 0;
+let touchCurrentY = 0;
+let isTouching = false;
+
 // Paddle properties
 const paddleWidth = 10;
 const paddleHeight = 80;
@@ -50,12 +55,40 @@ window.addEventListener('keyup', (e) => {
     keys[e.key] = false;
 });
 
-// Mouse movement for player paddle
+// Mouse movement for player paddle (Desktop)
 canvas.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
     const mouseY = e.clientY - rect.top;
     playerPaddle.y = mouseY - playerPaddle.height / 2;
 });
+
+// Touch controls for mobile/Android
+canvas.addEventListener('touchstart', (e) => {
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    touchStartY = touch.clientY - rect.top;
+    isTouching = true;
+    e.preventDefault();
+});
+
+canvas.addEventListener('touchmove', (e) => {
+    if (!isTouching) return;
+    const touch = e.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    touchCurrentY = touch.clientY - rect.top;
+    playerPaddle.y = touchCurrentY - playerPaddle.height / 2;
+    e.preventDefault();
+});
+
+canvas.addEventListener('touchend', (e) => {
+    isTouching = false;
+    e.preventDefault();
+});
+
+// Prevent default touch behaviors
+document.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+}, { passive: false });
 
 // Draw functions
 function drawPaddle(paddle) {
@@ -89,7 +122,7 @@ function drawCenterLine() {
 
 // Update functions
 function updatePlayerPaddle() {
-    // Arrow keys control
+    // Arrow keys control (Desktop)
     if (keys['ArrowUp'] || keys['w']) {
         playerPaddle.y -= paddleSpeed;
     }
