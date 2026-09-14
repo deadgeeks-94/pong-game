@@ -16,6 +16,24 @@ const paddleWidth = 10;
 const paddleHeight = 80;
 const paddleSpeed = 6;
 
+// Initialize canvas size
+function resizeCanvas() {
+    const container = canvas.parentElement;
+    const width = Math.min(800, window.innerWidth - 40);
+    const height = Math.min(400, window.innerHeight - 300);
+    
+    canvas.width = width;
+    canvas.height = height;
+    
+    // Reinitialize paddles with new canvas dimensions
+    playerPaddle.y = canvas.height / 2 - paddleHeight / 2;
+    computerPaddle.x = canvas.width - paddleWidth - 10;
+    computerPaddle.y = canvas.height / 2 - paddleHeight / 2;
+    
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+}
+
 // Player paddle (left side)
 const playerPaddle = {
     x: 10,
@@ -53,6 +71,11 @@ window.addEventListener('keydown', (e) => {
 
 window.addEventListener('keyup', (e) => {
     keys[e.key] = false;
+});
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    resizeCanvas();
 });
 
 // Mouse movement for player paddle (Desktop)
@@ -94,9 +117,6 @@ document.addEventListener('touchmove', (e) => {
 function drawPaddle(paddle) {
     ctx.fillStyle = '#00ff88';
     ctx.fillRect(paddle.x, paddle.y, paddle.width, paddle.height);
-    ctx.shadowColor = '#00ff88';
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = 'transparent';
 }
 
 function drawBall() {
@@ -104,9 +124,6 @@ function drawBall() {
     ctx.beginPath();
     ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
     ctx.fill();
-    ctx.shadowColor = '#ff00ff';
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = 'transparent';
 }
 
 function drawCenterLine() {
@@ -241,5 +258,6 @@ function resetGame() {
     resetBall();
 }
 
-// Start the game loop
+// Initialize canvas and start game loop
+resizeCanvas();
 gameLoop();
